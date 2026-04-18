@@ -1,0 +1,203 @@
+.world-clock {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  color: var(--fg);
+}
+
+.world-clock[data-orientation="horizontal"] {
+  flex-direction: row;
+  gap: 18px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding: 2px 2px 6px;
+}
+
+.world-clock[data-orientation="vertical"] {
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.world-clock__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
+.world-clock[data-orientation="horizontal"] .world-clock__item {
+  flex: 0 0 auto;
+  width: 160px;
+  flex-wrap: wrap;
+  row-gap: 2px;
+}
+
+.world-clock[data-orientation="vertical"] .world-clock__item {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.world-clock__dot {
+  flex: 0 0 auto;
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--fg-muted);
+  transition:
+    background-color 160ms ease,
+    box-shadow 160ms ease,
+    opacity 160ms ease,
+    width 160ms ease,
+    height 160ms ease;
+}
+
+/* Closed / Unknown — small, dim, no glow */
+.world-clock__dot[data-state="closed"],
+.world-clock__dot[data-state="unknown"] {
+  width: 6px;
+  height: 6px;
+  background-color: var(--fg-muted);
+  opacity: 0.35;
+  box-shadow: none;
+}
+
+/* Active states — larger dot with a colored box-shadow glow */
+.world-clock__dot[data-state="warn"] {
+  background-color: var(--warn);
+  box-shadow: 0 0 6px 0 color-mix(in srgb, var(--warn) 55%, transparent);
+}
+
+.world-clock__dot[data-state="up"] {
+  background-color: var(--up);
+  box-shadow: 0 0 6px 0 color-mix(in srgb, var(--up) 60%, transparent);
+}
+
+.world-clock__dot[data-state="down"] {
+  background-color: var(--down);
+  box-shadow: 0 0 6px 0 color-mix(in srgb, var(--down) 60%, transparent);
+}
+
+.world-clock__dot[data-state="flat"] {
+  background-color: var(--fg);
+  box-shadow: 0 0 6px 0 color-mix(in srgb, var(--fg) 45%, transparent);
+}
+
+/* Pulsing halo for active states */
+.world-clock__dot[data-state="warn"]::before,
+.world-clock__dot[data-state="up"]::before,
+.world-clock__dot[data-state="down"]::before,
+.world-clock__dot[data-state="flat"]::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: world-clock-halo-pulse 2.4s ease-in-out infinite;
+}
+
+.world-clock__dot[data-state="warn"]::before {
+  background: color-mix(in srgb, var(--warn) 18%, transparent);
+}
+
+.world-clock__dot[data-state="up"]::before {
+  background: color-mix(in srgb, var(--up) 22%, transparent);
+}
+
+.world-clock__dot[data-state="down"]::before {
+  background: color-mix(in srgb, var(--down) 22%, transparent);
+}
+
+.world-clock__dot[data-state="flat"]::before {
+  background: color-mix(in srgb, var(--fg) 15%, transparent);
+}
+
+@keyframes world-clock-halo-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.25);
+  }
+}
+
+.world-clock__label {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.world-clock[data-orientation="vertical"] .world-clock__label {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.world-clock__time {
+  font-family: ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
+  font-size: 17px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--fg);
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.world-clock[data-orientation="horizontal"] .world-clock__time {
+  flex: 0 0 100%;
+  padding-left: 16px;
+}
+
+.world-clock[data-orientation="vertical"] .world-clock__time {
+  margin-left: auto;
+}
+
+.world-clock__arrow {
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 600;
+}
+
+.world-clock__arrow[data-direction="up"] {
+  color: var(--up);
+}
+
+.world-clock__arrow[data-direction="down"] {
+  color: var(--down);
+}
+
+.world-clock__arrow[data-direction="flat"] {
+  color: var(--fg-muted);
+}
+
+.world-clock__change {
+  font-family: ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-muted);
+}
+
+.world-clock__change[data-direction="up"] {
+  color: var(--up);
+}
+
+.world-clock__change[data-direction="down"] {
+  color: var(--down);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-clock__dot::before {
+    animation: none;
+  }
+}
