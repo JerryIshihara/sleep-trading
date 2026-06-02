@@ -1,0 +1,115 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sleep-trading"
+version = "0.0.1"
+description = "Auto trading research, backtest, and live execution"
+requires-python = ">=3.11"
+dependencies = [
+    # Cross-module runtime deps (every module pulls from here, not from its own pyproject).
+    "aiohttp>=3.9",
+    "uvloop>=0.19; sys_platform != 'win32'",
+    "pandas>=2.0",
+    "numpy>=1.24",
+    "requests>=2.31",
+    "xlrd>=2.0",        # read the JPX .xls security-master workbook
+]
+
+[project.optional-dependencies]
+# Engine extras for backtesting/. Install selectively to avoid pulling all three
+# at once: `pip install -e .[vectorbt]` etc.
+vectorbt = ["vectorbt>=0.26"]
+backtesting_py = ["backtesting>=0.3"]
+backtrader = ["backtrader>=1.9"]
+all_engines = [
+    "vectorbt>=0.26",
+    "backtesting>=0.3",
+    "backtrader>=1.9",
+]
+# Vendor adapters under data/adapters/ — imported lazily, install per vendor.
+moomoo = ["moomoo-api>=10.4"]
+alpaca = ["alpaca-py>=0.20"]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.6",
+    "basedpyright>=1.18",
+]
+docs = [
+    "mkdocs>=1.6",
+    "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.26",
+]
+
+[project.scripts]
+data-service = "data.main:main"
+build-security-master = "data.reference.build:main"
+
+# ─── Packaging ───────────────────────────────────────────────────────
+# src/ is the project root; data/, strategy/, backtesting/ are sibling
+# packages, found directly without any package_dir gymnastics.
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["data", "data.*", "strategy", "strategy.*", "backtesting", "backtesting.*"]
+exclude = ["*.tests", "*.tests.*", "tests", "tests.*"]
+
+# ─── Tooling ─────────────────────────────────────────────────────────
+
+[tool.pytest.ini_options]
+testpaths = ["backtesting/tests"]
+addopts = "--import-mode=importlib"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = [".venv", "**/__pycache__"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "N", "RUF", "SIM", "PIE", "RET", "ARG", "TCH"]
+ignore = [
+    "E501",     # line length — handled by formatter
+    "TC001",    # don't force TYPE_CHECKING blocks — type-heavy code, low payoff
+    "TC002",
+    "TC003",
+    "RET504",   # explicit assign-then-return is fine and often clearer
+]
+
+[tool.basedpyright]
+include = ["data", "strategy", "backtesting"]
+exclude = [
+    "**/.venv/**",
+    "**/__pycache__/**",
+    "**/tests/fixtures/**",
+    "**/*.egg-info/**",
+    "dashboard/**",       # TypeScript module
+]
+extraPaths = ["."]        # src/ is the import root for data/strategy/backtesting
+venvPath = "."
+venv = ".venv"
+pythonVersion = "3.11"
+typeCheckingMode = "strict"
+# Don't analyze third-party library source — only our code.
+useLibraryCodeForTypes = false
+reportMissingTypeStubs = "none"
+# pandas / numpy / vectorbt have noisy Any-returning APIs; silence those classes
+# so high-signal rules stand out.
+reportAny = "none"
+reportUnknownMemberType = "none"
+reportUnknownArgumentType = "none"
+reportUnknownVariableType = "none"
+reportUnknownParameterType = "none"
+# Keep these on — high signal for this codebase.
+reportImplicitOverride = "error"
+reportUnannotatedClassAttribute = "error"
+
+# Tests can elide some annotations and ignore "unused" call results that
+# trigger validators on construction.
+[[tool.basedpyright.executionEnvironments]]
+root = "backtesting/tests"
+extraPaths = ["."]
+reportMissingParameterType = "none"
+reportUnusedCallResult = "none"
+reportUnannotatedClassAttribute = "none"

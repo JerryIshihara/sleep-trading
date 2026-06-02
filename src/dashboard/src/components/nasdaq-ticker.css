@@ -1,0 +1,117 @@
+.nasdaq-ticker__head {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nasdaq-ticker__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+.nasdaq-ticker__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--fg-muted);
+}
+
+.nasdaq-ticker__status--live {
+  color: var(--live);
+}
+
+.nasdaq-ticker__status--live .nasdaq-ticker__dot {
+  background: var(--live);
+  animation: nasdaq-ticker-pulse 1.6s ease-out infinite;
+}
+
+.nasdaq-ticker__status--sim {
+  color: var(--warn);
+}
+
+.nasdaq-ticker__status--sim .nasdaq-ticker__dot {
+  background: var(--warn);
+}
+
+@keyframes nasdaq-ticker-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--live) 55%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 7px color-mix(in srgb, var(--live) 0%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--live) 0%, transparent);
+  }
+}
+
+.nasdaq-ticker__tape {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.nasdaq-ticker__cell {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 12px 16px;
+  border-right: 1px solid var(--border);
+  transition: background-color 420ms ease;
+}
+
+.nasdaq-ticker__cell:last-child {
+  border-right: 0;
+}
+
+.nasdaq-ticker__cell[data-flash='up'] {
+  background: color-mix(in srgb, var(--up) 22%, transparent);
+  transition-duration: 0ms;
+}
+
+.nasdaq-ticker__cell[data-flash='down'] {
+  background: color-mix(in srgb, var(--down) 22%, transparent);
+  transition-duration: 0ms;
+}
+
+.nasdaq-ticker__symbol {
+  font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--fg);
+}
+
+.nasdaq-ticker__price {
+  font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  color: var(--fg);
+}
+
+.nasdaq-ticker__chg {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+}
+
+.nasdaq-ticker__chg--up {
+  color: var(--up);
+}
+
+.nasdaq-ticker__chg--down {
+  color: var(--down);
+}
+
+.nasdaq-ticker__arrow {
+  font-size: 9px;
+}
